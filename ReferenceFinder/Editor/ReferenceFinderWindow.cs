@@ -13,7 +13,7 @@ namespace Eazax.Editor
     /// 引用查找器窗口
     /// </summary>
     /// <author>陈皮皮</author>
-    /// <version>20220630</version>
+    /// <version>20220704</version>
     public class ReferenceFinderWindow : EditorWindow
     {
 
@@ -62,7 +62,7 @@ namespace Eazax.Editor
             // 触发搜索
             _instance._asset = Selection.activeObject;
             _instance._searchMode = SearchMode.BuiltinAPI;
-            _instance.OnFindReferencesButtonClick();
+            _instance.OnFindButtonClick();
         }
 
         /// <summary>
@@ -70,7 +70,6 @@ namespace Eazax.Editor
         /// </summary>
         private void OnDestroy()
         {
-            // 解除引用
             _instance = null;
         }
 
@@ -79,17 +78,17 @@ namespace Eazax.Editor
         #region Data
 
         /// <summary>
-        /// 引用数据列表
+        /// 数据列表
         /// </summary>
         private List<ReferenceFinder.ReferenceInfo> _results;
 
         /// <summary>
-        /// 过滤后的引用数据列表
+        /// 过滤后的数据列表
         /// </summary>
         private ReferenceFinder.ReferenceInfo[] _filteredResults;
 
         /// <summary>
-        /// 更新数据
+        /// 更新数据列表
         /// </summary>
         /// <param name="data">数据</param>
         private void UpdateResults(List<ReferenceFinder.ReferenceInfo> data)
@@ -282,9 +281,9 @@ You can switch Serialization Mode manually at [Edit -> Project Settings -> Edito
         #region ButtonCallbacks
 
         /// <summary>
-        /// 查找引用按钮点击回调
+        /// 查找按钮点击回调
         /// </summary>
-        private void OnFindReferencesButtonClick()
+        private void OnFindButtonClick()
         {
             if (_asset == null || _isSearching || _isResolving)
             {
@@ -360,7 +359,7 @@ You can switch Serialization Mode manually at [Edit -> Project Settings -> Edito
         }
 
         /// <summary>
-        /// 是否正在查找引用
+        /// 是否正在查找结果
         /// </summary>
         private bool _isSearching;
 
@@ -380,7 +379,7 @@ You can switch Serialization Mode manually at [Edit -> Project Settings -> Edito
         private SearchMode _searchMode = SearchMode.BuiltinAPI;
 
         /// <summary>
-        /// 引用列表滚动位置
+        /// 列表滚动位置
         /// </summary>
         private Vector2 _scrollPosition;
 
@@ -485,8 +484,8 @@ You can switch Serialization Mode manually at [Edit -> Project Settings -> Edito
 
         private readonly GUIContent _optionAssetLabel = new GUIContent("Asset", "Just asset");
 
-        private readonly GUIContent _optionModeLabel = new GUIContent("Search Mode", @"Choose reference searching mode, for unity builtin assets will always using TextRegex mode.
-  - Builtin API: Use AssetDatabase.GetDependencies API to get reference info
+        private readonly GUIContent _optionModeLabel = new GUIContent("Search Mode", @"Choose search mode (for unity builtin assets will always using TextRegex mode):
+  - Builtin API: Use AssetDatabase.GetDependencies API to collect reference infos
   - Text Regex: Use regular expressions to match FileID and GUID text in asset files to confirm references");
 
         private readonly GUIContent _findButtonLabel = new GUIContent("Find References");
@@ -552,8 +551,8 @@ and so on...");
 
                     GUILayout.Space(_sectionSpacing);
 
-                    // 引用列表
-                    OnReferencesGUI();
+                    // 结果
+                    OnResultsGUI();
                 }
                 EditorGUILayout.EndVertical();
                 GUILayout.Space(_padding);
@@ -605,7 +604,7 @@ and so on...");
                 // 查找按钮
                 if (GUILayout.Button(_findButtonLabel))
                 {
-                    OnFindReferencesButtonClick();
+                    OnFindButtonClick();
                     GUI.FocusControl(null);
                 }
 
@@ -620,9 +619,9 @@ and so on...");
         }
 
         /// <summary>
-        /// 引用列表 GUI
+        /// 结果 GUI
         /// </summary>
-        private void OnReferencesGUI()
+        private void OnResultsGUI()
         {
             EditorGUILayout.BeginVertical();
             {
@@ -839,8 +838,8 @@ and so on...");
             public static readonly GUILayoutOption toolbarSearchWidth = GUILayout.Width(200);
 
             public static readonly GUILayoutOption tableHeaderHeight = GUILayout.Height(22);
-            public static readonly GUILayoutOption tableMinHeight = GUILayout.Height(ReferenceFinderWindow._tableRowHeight * _tableMinRowCount);
-            public static readonly GUILayoutOption tableRowHeight = GUILayout.Height(ReferenceFinderWindow._tableRowHeight);
+            public static readonly GUILayoutOption tableMinHeight = GUILayout.Height(_tableRowHeight * _tableMinRowCount);
+            public static readonly GUILayoutOption tableRowHeight = GUILayout.Height(_tableRowHeight);
             public static readonly GUILayoutOption tableNoWidth = GUILayout.Width(40);
             public static readonly GUILayoutOption tableAssetWidth = GUILayout.Width(250);
             public static readonly GUILayoutOption tableRefCountWidth = GUILayout.Width(80);
