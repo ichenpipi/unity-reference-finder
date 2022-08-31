@@ -14,7 +14,7 @@ namespace Eazax.Editor
     /// 引用查找器
     /// </summary>
     /// <author>陈皮皮</author>
-    /// <version>20220630</version>
+    /// <version>20220831</version>
     public static class ReferenceFinder
     {
 
@@ -103,27 +103,29 @@ namespace Eazax.Editor
             List<ReferenceInfo> list = new List<ReferenceInfo>();
             int maxIndex = files.Length - 1;
             int curIndex = 0;
-            int countPerBatch = 10;
+            const int countPerBatch = 10;
             EditorApplication.update = () =>
             {
                 // 是否快结束了
                 int count = countPerBatch;
-                if (curIndex + count >= maxIndex)
+                if (curIndex + count > maxIndex)
                 {
-                    count = maxIndex - curIndex;
+                    count = maxIndex - curIndex + 1;
                 }
                 // 搞一轮
                 for (int i = 0; i < count; i++)
                 {
-                    // 获取路径并增加计数
-                    string relativePath = GetAssetRelativePath(files[curIndex++]);
+                    string path = GetAssetRelativePath(files[curIndex]);
                     // 排除自己
-                    if (relativePath.Equals(assetPath))
+                    if (path.Equals(assetPath))
                     {
+                        ++curIndex;
                         continue;
                     }
-                    // 展示进度                    
-                    bool hasCanceled = EditorUtility.DisplayCancelableProgressBar("Finding References...", relativePath, (float)curIndex / maxIndex);
+                    // 展示进度
+                    string title = $"Finding References... ({curIndex + 1}/{maxIndex + 1})";
+                    float progress = (float) (curIndex + 1) / (maxIndex + 1);
+                    bool hasCanceled = EditorUtility.DisplayCancelableProgressBar(title, path, progress);
                     // 是否取消了
                     if (hasCanceled)
                     {
@@ -133,11 +135,13 @@ namespace Eazax.Editor
                         return;
                     }
                     // 检查引用
-                    ReferenceInfo info = CheckReference(relativePath, assetPath);
+                    ReferenceInfo info = CheckReference(path, assetPath);
                     if (info != null)
                     {
                         list.Add(info);
                     }
+                    // 下一个
+                    ++curIndex;
                 }
                 // 结束了吗
                 if (curIndex >= maxIndex)
